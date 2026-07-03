@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>J/80 Trim Card</title>
+<style>
+  :root{
+    --sea:#0b1d28; --sea2:#102a39; --panel:#0e2532;
+    --paper:#f4f7f8; --ink:#0d2230; --ink-soft:#5a7180; --hair:rgba(255,255,255,.10);
+    --light:#3fb0cc; --med:#2fa166; --heavy:#dd803a; --telltale:#ecd84e; --rig:#7fd6e8;
+    --good:#2fa166; --warn:#ecd84e; --bad:#dd803a;
+    --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    background:var(--sea);color:var(--paper);font-family:var(--sans);
+    line-height:1.45;padding:env(safe-area-inset-top) 0 48px;
+    background-image:radial-gradient(120% 60% at 50% -10%, #15364a 0%, var(--sea) 60%);
+  }
+  .wrap{max-width:480px;margin:0 auto;padding:0 16px}
+
+  header{padding:26px 0 14px}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--rig);opacity:.85}
+  h1{font-size:30px;font-weight:800;letter-spacing:-.01em;margin:4px 0 2px;line-height:1.02}
+  h1 .slash{color:var(--telltale)}
+  .thesis{font-size:13.5px;color:#bcd0da;margin-top:10px}
+  .thesis b{color:#fff;font-weight:700}
+
+  .principles{
+    margin:16px 0 18px;border:1px solid var(--hair);border-radius:14px;
+    background:linear-gradient(180deg,var(--sea2),#0c2230);padding:13px 14px;
+  }
+  .principles .row{display:flex;gap:9px;font-size:12.5px;color:#cddde4;padding:4px 0}
+  .principles .row+.row{border-top:1px solid var(--hair)}
+  .principles .k{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--telltale);min-width:74px;padding-top:2px}
+  .principles b{color:#fff}
+
+  .tabs{display:flex;gap:4px;position:sticky;top:0;z-index:5;
+    padding:10px 0;background:linear-gradient(180deg,var(--sea) 70%,rgba(11,29,40,0));margin-bottom:4px}
+  .tab{flex:1;font-family:var(--mono);font-size:10.5px;letter-spacing:.03em;text-transform:uppercase;
+    color:#9fb6c1;background:var(--sea2);border:1px solid var(--hair);border-radius:10px;
+    padding:11px 2px;text-align:center;cursor:pointer;transition:background .18s,color .18s,border-color .18s}
+  .tab:focus-visible{outline:2px solid var(--rig);outline-offset:2px}
+  .tab[aria-selected="true"]{background:var(--paper);color:var(--ink);border-color:var(--paper);font-weight:700}
+
+  .panel{display:none;animation:fade .22s ease both}
+  .panel.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+  /* Boat diagrams */
+  .diagram{display:flex;align-items:center;gap:14px;border:1px solid var(--hair);border-radius:16px;
+    background:var(--panel);padding:12px 14px;margin:6px 0 14px}
+  .diagram svg{width:104px;height:96px;flex:0 0 auto}
+  .dx h2{font-size:19px;font-weight:800;letter-spacing:-.01em}
+  .dx .aw{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--rig);margin-top:2px}
+  .dx p{font-size:12.5px;color:#bcd0da;margin-top:7px}
+
+  /* Cards */
+  .card{background:var(--paper);color:var(--ink);border-radius:14px;margin-bottom:11px;overflow:hidden;border-left:5px solid var(--c)}
+  .card.light{--c:var(--light)} .card.med{--c:var(--med)} .card.heavy{--c:var(--heavy)}
+  .chead{display:flex;align-items:baseline;gap:8px;padding:11px 14px 9px;border-bottom:1px solid #e4eaed}
+  .pill{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;
+    color:#fff;background:var(--c);padding:3px 8px;border-radius:999px}
+  .chead .kn{font-family:var(--mono);font-size:11px;color:var(--ink-soft)}
+  .chead .move{margin-left:auto;font-size:11.5px;font-weight:700;color:var(--c);text-align:right;max-width:52%}
+  .rows{padding:6px 14px 12px}
+  .r{display:grid;grid-template-columns:78px 1fr;gap:10px;padding:5px 0;font-size:13px;border-top:1px solid #eef2f4}
+  .r:first-child{border-top:0}
+  .r .lbl{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);padding-top:2px}
+  .r.bs .lbl{color:#b25a16}
+  .r .val{color:var(--ink)}
+  .r .val em{font-style:normal;color:var(--c);font-weight:700}
+  .feel{margin:2px 14px 12px;padding:8px 11px;background:#eaf0f2;border-radius:9px;font-size:12px;color:#33505f}
+  .feel b{color:var(--ink)}
+
+  /* Sequence blocks */
+  .seq{border:1px solid var(--hair);border-radius:14px;background:var(--panel);padding:13px 15px;margin-bottom:12px;--n:var(--rig)}
+  .seq.dep{--n:var(--heavy)} .seq.pow{--n:var(--light)} .seq.lite{--n:var(--light);border-color:rgba(63,176,204,.45);background:linear-gradient(180deg,rgba(63,176,204,.08),var(--panel))}
+  .seq.zip{--n:var(--telltale);border-color:rgba(236,216,78,.35);background:linear-gradient(180deg,rgba(236,216,78,.07),var(--panel))}
+  .seq h4{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#fff;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+  .seq h4::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--n);flex:0 0 auto}
+  .step{display:flex;gap:10px;font-size:12.8px;color:#d4e2e8;padding:5px 0}
+  .step+.step{border-top:1px solid var(--hair)}
+  .num{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--sea);background:var(--n);
+    min-width:20px;height:20px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;margin-top:1px}
+  .step b{color:#fff}
+  .seq .note{font-size:11.5px;color:#9fb6c1;margin-top:10px;font-style:italic}
+
+  /* Telltales */
+  .tl{display:flex;gap:8px;font-size:12.7px;color:#d4e2e8;padding:5px 0;align-items:baseline}
+  .tl+.tl{border-top:1px solid var(--hair)}
+  .tl .m{flex:0 0 auto;font-size:12px;line-height:1.2}
+  .tl .m.core{color:var(--telltale)} .tl .m.fine{color:#6f8794}
+  .tl .wind{flex:0 0 78px;font-family:var(--mono);font-size:9.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--rig)}
+  .tl b{color:#fff}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:11.5px;color:#9fb6c1;margin:2px 0 12px;padding:9px 13px;border:1px solid var(--hair);border-radius:10px;background:var(--sea2)}
+
+  /* Zipper diagram */
+  .zipper-wrap{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:14px 0}
+  .zp{background:var(--sea2);border:1px solid var(--hair);border-radius:12px;padding:10px 8px;text-align:center}
+  .zp svg{width:100%;height:110px;display:block;margin-bottom:6px}
+  .zp .zlbl{font-family:var(--mono);font-size:9.5px;text-transform:uppercase;letter-spacing:.08em;color:#9fb6c1;margin-bottom:2px}
+  .zp .zdesc{font-size:11px;color:#d4e2e8;line-height:1.3}
+  .zp.good{border-color:rgba(47,161,102,.5)} .zp.warn{border-color:rgba(236,216,78,.5)} .zp.bad{border-color:rgba(221,128,58,.5)}
+  .zp.good .zlbl{color:var(--good)} .zp.warn .zlbl{color:var(--warn)} .zp.bad .zlbl{color:var(--bad)}
+  .zipper-rule{background:var(--sea2);border:1px solid rgba(236,216,78,.3);border-radius:10px;padding:10px 12px;font-size:12px;color:#d4e2e8;margin-bottom:12px;line-height:1.5}
+  .zipper-rule b{color:var(--telltale)}
+
+  /* Summary */
+  .summary{margin-top:26px}
+  .summary h3{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--rig);margin-bottom:4px}
+  .summary .sub{font-size:12px;color:#9fb6c1;margin-bottom:12px}
+  .matrix{border:1px solid var(--hair);border-radius:14px;overflow:hidden}
+  .mrow{display:grid;grid-template-columns:64px 1fr 1fr 1fr}
+  .mrow+.mrow{border-top:1px solid var(--hair)}
+  .mcell{padding:9px 9px;font-size:11px;border-left:1px solid var(--hair);color:#d4e2e8}
+  .mcell:first-child{border-left:0}
+  .mhead .mcell{font-family:var(--mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:#fff;background:var(--sea2)}
+  .mhead .l{color:var(--light)} .mhead .m{color:var(--med)} .mhead .h{color:var(--heavy)}
+  .rowlbl{font-family:var(--mono);font-size:10px;letter-spacing:.04em;text-transform:uppercase;color:var(--telltale);
+    display:flex;align-items:center;background:var(--sea2)}
+
+  footer{margin-top:26px;font-size:11px;color:#6f8794;text-align:center;line-height:1.5}
+  footer b{color:#9fb6c1}
+  @media (prefers-reduced-motion:reduce){.panel.active{animation:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Tuning Card · One-Design</div>
+    <h1>J/80 <span class="slash">/</span> Trim</h1>
+    <p class="thesis"><b>The backstay is your throttle.</b> The 4:1 split backstay bends the mast, straightens the forestay, and flattens the main — North Sails calls it the most dynamic trim on the boat. Sheet sets twist; traveler sets angle.</p>
+  </header>
+
+  <div class="principles">
+    <div class="row"><span class="k">Backstay</span><span>Primary depower — <b>bends mast, straightens forestay, flattens main.</b> Key in all winds.</span></div>
+    <div class="row"><span class="k">Sheet</span><span>Sets <b>twist</b> — read off the <b>top-leech telltale</b> (it stalls first).</span></div>
+    <div class="row"><span class="k">Traveler</span><span>Sets <b>angle of attack</b> — read off the <b>luff telltales</b>.</span></div>
+    <div class="row"><span class="k">Off-wind</span><span>Ease backstay for power; <b>vang</b> takes over leech/twist.</span></div>
+  </div>
+
+  <div class="tabs" role="tablist" aria-label="Point of sail">
+    <button class="tab" role="tab" aria-selected="true"  aria-controls="upwind" id="t-upwind">Upwind</button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="beam"   id="t-beam">Beam</button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="broad"  id="t-broad">Broad</button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="seq"    id="t-seq">Order</button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="tells"  id="t-tells">Tells</button>
+  </div>
+
+  <!-- UPWIND -->
+  <section class="panel active" id="upwind" role="tabpanel" aria-labelledby="t-upwind">
+    <div class="diagram">
+      <svg viewBox="0 0 220 200" aria-label="Upwind starboard tack; main and jib both set to leeward">
+        <path d="M110 26 C128 70 128 122 119 170 L101 170 C92 122 92 70 110 26 Z" fill="#16384a" stroke="#33586b" stroke-width="2"/>
+        <line x1="110" y1="80" x2="103" y2="148" stroke="#cfe6ee" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M110 80 Q88 110 103 148" fill="none" stroke="#cfe6ee" stroke-width="3" stroke-linecap="round"/>
+        <path d="M110 31 Q97 47 100 66" fill="none" stroke="#9ec9d6" stroke-width="2.5" stroke-linecap="round"/>
+        <circle cx="110" cy="80" r="3.4" fill="var(--telltale)"/>
+        <line x1="192" y1="32" x2="152" y2="68" stroke="var(--rig)" stroke-width="2.5"/>
+        <path d="M152 68 l11 -2 -4 10 z" fill="var(--rig)"/>
+      </svg>
+      <div class="dx"><h2>Upwind</h2><div class="aw">AW ~25° · close-hauled</div><p>Backstay is your gear-shift. Sheet for the leech, traveler for the angle.</p></div>
+    </div>
+    <div class="card light">
+      <div class="chead"><span class="pill">Light</span><span class="kn">&lt;8 kn</span><span class="move">Backstay soft · deep · foot off</span></div>
+      <div class="rows">
+        <div class="r bs"><span class="lbl">Backstay</span><span class="val"><em>Eased</em> — draft ~50%, forestay sag for power</span></div>
+        <div class="r"><span class="lbl">Sheet</span><span class="val">Eased — all leech telltales flying 100%</span></div>
+        <div class="r"><span class="lbl">Traveler</span><span class="val">Up, above centerline (boom ~centered)</span></div>
+        <div class="r"><span class="lbl">Vang</span><span class="val">Off</span></div>
+        <div class="r"><span class="lbl">Cunno</span><span class="val">Off</span></div>
+        <div class="r"><span class="lbl">Outhaul</span><span class="val">Eased — fuller foot</span></div>
+        <div class="r"><span class="lbl">Jib</span><span class="val">Halyard eased, full; lead a touch fwd</span></div>
+      </div>
+      <div class="feel"><b>Feel:</b> Foot off, sail fat, heel to leeward. Crew forward and dead still.</div>
+    </div>
+    <div class="card med">
+      <div class="chead"><span class="pill">Medium</span><span class="kn">8–15 kn</span><span class="move">Backstay med · straighten forestay</span></div>
+      <div class="rows">
+        <div class="r bs"><span class="lbl">Backstay</span><span class="val"><em>Medium pull</em> — straighten forestay (~8 cm sag), set prebend</span></div>
+        <div class="r"><span class="lbl">Sheet</span><span class="val">Firm — top batten ∥ boom, top telltale just stalling occasionally</span></div>
+        <div class="r"><span class="lbl">Traveler</span><span class="val">Near centerline; trim for light weather helm</span></div>
+        <div class="r"><span class="lbl">Vang</span><span class="val">Snug</span></div>
+        <div class="r"><span class="lbl">Cunno</span><span class="val">Light — kill the wrinkles</span></div>
+        <div class="r"><span class="lbl">Outhaul</span><span class="val">Near max</span></div>
+        <div class="r"><span class="lbl">Jib</span><span class="val">Halyard firm, lead mid, trim to slot</span></div>
+      </div>
+      <div class="feel"><b>Feel:</b> Fully powered, both telltales streaming. Hike to ~12–15° heel.</div>
+    </div>
+    <div class="card heavy">
+      <div class="chead"><span class="pill">Heavy</span><span class="kn">&gt;16 kn</span><span class="move">Backstay max · trav down · vang-sheet</span></div>
+      <div class="rows">
+        <div class="r bs"><span class="lbl">Backstay</span><span class="val"><em>On hard</em> — max mast bend, flatten main, top leech flies (depower)</span></div>
+        <div class="r"><span class="lbl">Sheet</span><span class="val">Hard; ease in puffs, vang holds leech</span></div>
+        <div class="r"><span class="lbl">Traveler</span><span class="val"><em>Down</em> to leeward; play in puffs</span></div>
+        <div class="r"><span class="lbl">Vang</span><span class="val">On — vang-sheet in puffs</span></div>
+        <div class="r"><span class="lbl">Cunno</span><span class="val">Max</span></div>
+        <div class="r"><span class="lbl">Outhaul</span><span class="val">Max — flat foot</span></div>
+        <div class="r"><span class="lbl">Jib</span><span class="val">Halyard max, lead aft</span></div>
+      </div>
+      <div class="feel"><b>Feel:</b> Flat and feathered. Backstay and traveler are your gears in the puffs.</div>
+    </div>
+  </section>
+
+  <!-- BEAM -->
+  <section class="panel" id="beam" role="tabpanel" aria-labelledby="t-beam">
+    <div class="diagram">
+      <svg viewBox="0 0 220 200" aria-label="Beam reach starboard tack; main and jib eased to leeward">
+        <path d="M110 26 C128 70 128 122 119 170 L101 170 C92 122 92 70 110 26 Z" fill="#16384a" stroke="#33586b" stroke-width="2"/>
+        <line x1="110" y1="80" x2="62" y2="126" stroke="#cfe6ee" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M110 80 Q70 96 62 126" fill="none" stroke="#cfe6ee" stroke-width="3" stroke-linecap="round"/>
+        <path d="M110 31 Q80 52 69 84" fill="none" stroke="#9ec9d6" stroke-width="2.5" stroke-linecap="round"/>
+        <circle cx="110" cy="80" r="3.4" fill="var(--telltale)"/>
+        <line x1="196" y1="100" x2="150" y2="100" stroke="var(--rig)" stroke-width="2.5"/>
+        <path d="M150 100 l11 -5 0 10 z" fill="var(--rig)"/>
+      </svg>
+      <div class="dx"><h2>Beam Reach</h2><div class="aw">AW ~90° · fastest point</div><p>Ease backstay to power the main. Sheet's eased, so <b>vang</b> sets twist.</p></div>
+    </div>
+    <div class="card light">
+      <div class="chead"><span class="pill">Light</span><span class="kn">&lt;8 kn</span><span class="move">Backstay off · ease to luff</span></div>
+      <div class="rows">
+        <div class="r bs"><span class="lbl">Backstay</span><span class="val"><em>Eased</em> — full powered main</span></div>
+        <div class="r"><span class="lbl">Main</span><span class="val">Ease to just-luffing, then on</span></div>
+        <div class="r"><span class="lbl">Vang</span><span class="val">Light — all leech telltales flowing</span></div>
+        <div class="r"><span class="lbl">Traveler</span><span class="val">Down / to leeward</span></div>
+        <div class="r"><span class="lbl">Outhaul</span><span class="val">Eased · Cunno off</span></div>
+        <div class="r"><span class="lbl">Jib</span><span class="val">Eased, lead out & fwd</span></div>
+      </div>
+      <div class="feel"><b>Feel:</b> Depth and flow. Foot for speed, weight forward.</div>
+    </div>
+    <div class="card med">
+      <div class="chead"><span class="pill">Medium</span><span class="kn">8–15 kn</span><span class="move">Light backstay · vang sets twist</span></div>
+      <div class="rows">
+        <div class="r bs"><span class="lbl">Backstay</span><span class="val">Light — some forestay tension for the jib</span></div>
+        <div class="r"><span class="lbl">Main</span><span class="val">Just shy of luffing</span></div>
+        <div class="r"><span class="lbl">Vang</span><span class="val"><em>Sets twist</em> — middle telltales streaming, top on edge</span></div>
+        <div class="r"><span class="lbl">Outhaul</span><span class="val">Mid · Cunno light</span></div>
+        <div class="r"><span class="lbl">Jib</span><span class="val">Eased, lead outboard</span></div>
+      </div>
+      <div class="feel"><b>Feel:</b> Powered and quick — the J/80's fast point of sail.</div>
+    </div>
+    <div class="card heavy">
+      <div class="chead"><span class="pill">Heavy</span><span class="kn">&gt;16 kn</span><span class="move">Backstay on to flatten · stay flat</span></div>
+      <div class="rows">
+        <div class="r bs"><span class="lbl">Backstay</span><span class="val">On — flatten & depower</span></div>
+        <div class="r"><span class="lbl">Main</span><span class="val">Ease in puffs</span></div>
+        <div class="r"><span class="lbl">Vang</span><span class="val">Ease a touch — twist top off to spill</span></div>
+        <div class="r"><span class="lbl">Outhaul</span><span class="val">On — flat · Cunno on</span></div>
+        <div class="r"><span class="lbl">Jib</span><span class="val">Eased, twist on</span></div>
+      </div>
+      <div class="feel"><b>Feel:</b> High load — keep flat, steer to head off a round-up.</div>
+    </div>
+  </section>
+
+  <!-- BROAD -->
+  <section class="panel" id="broad" role="tabpanel" aria-labelledby="t-broad">
+    <div class="diagram">
+      <svg viewBox="0 0 220 200" aria-label="Broad reach with asymmetric kite; jib furled, boom well out">
+        <path d="M110 26 C128 70 128 122 119 170 L101 170 C92 122 92 70 110 26 Z" fill="#16384a" stroke="#33586b" stroke-width="2"/>
+        <line x1="110" y1="80" x2="44" y2="102" stroke="#cfe6ee" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M110 80 Q70 80 44 102" fill="none" stroke="#cfe6ee" stroke-width="3" stroke-linecap="round"/>
+        <line x1="110" y1="28" x2="110" y2="10" stroke="#7fb6c9" stroke-width="2"/>
+        <path d="M110 12 Q70 22 60 56 Q92 44 110 30 Z" fill="rgba(236,216,78,.18)" stroke="var(--telltale)" stroke-width="2" stroke-linejoin="round"/>
+        <circle cx="110" cy="80" r="3.4" fill="var(--telltale)"/>
+        <line x1="190" y1="160" x2="152" y2="128" stroke="var(--rig)" stroke-width="2.5"/>
+        <path d="M152 128 l12 1 -5 9 z" fill="var(--rig)"/>
+      </svg>
+      <div class="dx"><h2>Broad Reach</h2><div class="aw">AW ~135–150° · sprit & kite</div><p>Backstay off, sprit out, fly the asymmetric. Main right out, <b>vang</b> controls twist.</p></div>
+    </div>
+    <div class="card light">
+      <div class="chead"><span class="pill">Light</span><span class="kn">&lt;8 kn</span><span class="move">Hot angles · ease tack line</span></div>
+      <div class="rows">
+        <div class="r bs"><span class="lbl">Backstay</span><span class="val">Off</span></div>
+        <div class="r"><span class="lbl">Kite</span><span class="val"><em>Sheet</em> to luff just curling — play constantly</span></div>
+        <div class="r"><span class="lbl">Tack line</span><span class="val">Eased — sail rotates to weather</span></div>
+        <div class="r"><span class="lbl">Main</span><span class="val">Right out; vang light</span></div>
+        <div class="r"><span class="lbl">Outhaul</span><span class="val">Eased · Cunno off</span></div>
+      </div>
+      <div class="feel"><b>Feel:</b> Hot angles to build apparent wind, then soak. Work the sheet.</div>
+    </div>
+    <div class="card med">
+      <div class="chead"><span class="pill">Medium</span><span class="kn">8–15 kn</span><span class="move">Soak · vang controls twist</span></div>
+      <div class="rows">
+        <div class="r bs"><span class="lbl">Backstay</span><span class="val">Off</span></div>
+        <div class="r"><span class="lbl">Kite</span><span class="val">Sheet to luff-curl; tack line firmer</span></div>
+        <div class="r"><span class="lbl">Main</span><span class="val">Out; vang set so boom can't sky</span></div>
+        <div class="r"><span class="lbl">Outhaul</span><span class="val">Mid · Cunno light</span></div>
+      </div>
+      <div class="feel"><b>Feel:</b> Soak lower as pressure builds. Fast and fun.</div>
+    </div>
+    <div class="card heavy">
+      <div class="chead"><span class="pill">Heavy</span><span class="kn">&gt;16 kn</span><span class="move">Plane · vang on · weight aft</span></div>
+      <div class="rows">
+        <div class="r bs"><span class="lbl">Backstay</span><span class="val">Off</span></div>
+        <div class="r"><span class="lbl">Kite</span><span class="val">Tack line <em>max</em>; play sheet, ease in gusts</span></div>
+        <div class="r"><span class="lbl">Main</span><span class="val"><em>Vang ON</em> — kills the death-roll</span></div>
+        <div class="r"><span class="lbl">Outhaul</span><span class="val">On · Cunno on</span></div>
+        <div class="r"><span class="lbl">Steer</span><span class="val">Bow down, soak the gusts</span></div>
+      </div>
+      <div class="feel"><b>Feel:</b> Planing. Weight <b>aft</b>. Watch the broach and by-the-lee.</div>
+    </div>
+  </section>
+
+  <!-- ORDER -->
+  <section class="panel" id="seq" role="tabpanel" aria-labelledby="t-seq">
+    <div class="seq">
+      <h4>Trim from scratch · any point of sail</h4>
+      <div class="step"><span class="num">1</span><span><b>Backstay</b> — pick your gear for the wind.</span></div>
+      <div class="step"><span class="num">2</span><span><b>Sheet</b> — set twist to the top-leech telltale.</span></div>
+      <div class="step"><span class="num">3</span><span><b>Traveler</b> — set angle to the luff telltales &amp; helm.</span></div>
+      <div class="step"><span class="num">4</span><span><b>Cunningham + outhaul</b> — fine-tune draft &amp; foot.</span></div>
+      <div class="step"><span class="num">5</span><span><b>Jib</b> to the slot, then re-check the main twist.</span></div>
+      <p class="note">Big controls first, fine controls last — then iterate.</p>
+    </div>
+    <div class="seq dep">
+      <h4>Building breeze → depower · in order</h4>
+      <div class="step"><span class="num">1</span><span><b>Backstay on</b> — bend mast, flatten main, firm forestay.</span></div>
+      <div class="step"><span class="num">2</span><span><b>Cunningham on</b> — draft forward as mast bends.</span></div>
+      <div class="step"><span class="num">3</span><span><b>Outhaul on</b> — flat foot.</span></div>
+      <div class="step"><span class="num">4</span><span><b>Traveler down</b> — shed heel &amp; helm.</span></div>
+      <div class="step"><span class="num">5</span><span><b>Vang on, ease sheet in puffs</b> — vang-sheet.</span></div>
+      <div class="step"><span class="num">6</span><span><b>Jib</b> — halyard up, lead aft.</span></div>
+      <p class="note">Shifting up through the gears as it builds.</p>
+    </div>
+    <div class="seq pow">
+      <h4>Lulls → power up · reverse it</h4>
+      <div class="step"><span class="num">1</span><span><b>Ease backstay</b> — mast straightens, main deepens.</span></div>
+      <div class="step"><span class="num">2</span><span><b>Ease cunningham &amp; outhaul</b> — restore depth.</span></div>
+      <div class="step"><span class="num">3</span><span><b>Traveler up</b> — angle back on.</span></div>
+      <div class="step"><span class="num">4</span><span><b>Sheet on</b> — trim to the telltale.</span></div>
+      <div class="step"><span class="num">5</span><span><b>Jib</b> — halyard eased, lead forward.</span></div>
+    </div>
+    <div class="seq">
+      <h4>Rig base · at the dock</h4>
+      <div class="step"><span class="num">1</span><span><b>Mast butt</b> → ~3.5–3.75″ prebend.</span></div>
+      <div class="step"><span class="num">2</span><span><b>Uppers</b> to base — mast in column.</span></div>
+      <div class="step"><span class="num">3</span><span><b>Lowers, then intermediates</b> — still in column.</span></div>
+      <div class="step"><span class="num">4</span><span><b>Rake</b> at base tension, backstay fully eased.</span></div>
+      <div class="step"><span class="num">5</span><span><b>Match backstay turnbuckles</b> to the shrouds.</span></div>
+      <div class="step"><span class="num">6</span><span><b>Leave the dock at base</b> (6–10 kn); trim from there.</span></div>
+    </div>
+  </section>
+
+  <!-- TELLTALES -->
+  <section class="panel" id="tells" role="tabpanel" aria-labelledby="t-tells">
+
+    <div class="legend">
+      <span><span class="m core">●</span> Core — every race</span>
+      <span><span class="m fine">○</span> Fine-tune — pro-level polish</span>
+    </div>
+
+    <!-- ZIPPER CONCEPT -->
+    <div class="seq zip">
+      <h4>The zipper — how the leech stalls</h4>
+      <div class="zipper-rule"><b>Sheet in = leech closes top-first, like a zipper.</b> The top telltale stalls first — that's your warning. The lower telltales stall last — that's already too far. Trim to "just catching the top tooth."</div>
+      <div class="zipper-wrap">
+
+        <!-- TOO EASED -->
+        <div class="zp good">
+          <svg viewBox="0 0 60 110" aria-label="Leech too eased: all three telltales flying freely">
+            <line x1="30" y1="5" x2="30" y2="105" stroke="#33586b" stroke-width="3" stroke-linecap="round"/>
+            <!-- top telltale flying -->
+            <line x1="30" y1="20" x2="52" y2="14" stroke="#2fa166" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="30" cy="20" r="3" fill="#2fa166"/>
+            <!-- mid telltale flying -->
+            <line x1="30" y1="55" x2="52" y2="49" stroke="#2fa166" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="30" cy="55" r="3" fill="#2fa166"/>
+            <!-- low telltale flying -->
+            <line x1="30" y1="88" x2="52" y2="82" stroke="#2fa166" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="30" cy="88" r="3" fill="#2fa166"/>
+            <!-- zipper open indicator -->
+            <text x="30" y="107" text-anchor="middle" fill="#2fa166" font-size="7" font-family="monospace">open</text>
+          </svg>
+          <div class="zlbl">Too eased</div>
+          <div class="zdesc">All flying — speed on the table</div>
+        </div>
+
+        <!-- RIGHT -->
+        <div class="zp warn">
+          <svg viewBox="0 0 60 110" aria-label="Leech trimmed right: top telltale just stalling, mid and low flying">
+            <line x1="30" y1="5" x2="30" y2="105" stroke="#33586b" stroke-width="3" stroke-linecap="round"/>
+            <!-- top stalled -->
+            <path d="M30 20 Q26 24 22 20" fill="none" stroke="#ecd84e" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="30" cy="20" r="3" fill="#ecd84e"/>
+            <!-- mid flying -->
+            <line x1="30" y1="55" x2="52" y2="49" stroke="#2fa166" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="30" cy="55" r="3" fill="#2fa166"/>
+            <!-- low flying -->
+            <line x1="30" y1="88" x2="52" y2="82" stroke="#2fa166" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="30" cy="88" r="3" fill="#2fa166"/>
+            <text x="30" y="107" text-anchor="middle" fill="#ecd84e" font-size="7" font-family="monospace">edge</text>
+          </svg>
+          <div class="zlbl">Right</div>
+          <div class="zdesc">Top just stalling — rest flying</div>
+        </div>
+
+        <!-- OVER-TRIMMED -->
+        <div class="zp bad">
+          <svg viewBox="0 0 60 110" aria-label="Over-trimmed: all three telltales stalled and sucked in behind leech">
+            <line x1="30" y1="5" x2="30" y2="105" stroke="#33586b" stroke-width="3" stroke-linecap="round"/>
+            <!-- all stalled -->
+            <path d="M30 20 Q26 24 22 20" fill="none" stroke="#dd803a" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="30" cy="20" r="3" fill="#dd803a"/>
+            <path d="M30 55 Q26 59 22 55" fill="none" stroke="#dd803a" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="30" cy="55" r="3" fill="#dd803a"/>
+            <path d="M30 88 Q26 92 22 88" fill="none" stroke="#dd803a" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="30" cy="88" r="3" fill="#dd803a"/>
+            <text x="30" y="107" text-anchor="middle" fill="#dd803a" font-size="7" font-family="monospace">stuck</text>
+          </svg>
+          <div class="zlbl">Over-trimmed</div>
+          <div class="zdesc">Zipper stuck — ease sheet</div>
+        </div>
+
+      </div>
+      <div class="step" style="margin-top:4px"><span class="m core" style="font-size:12px;flex:0 0 auto">●</span><span><b>If the bottom stalls while the top flies freely</b> — it's not the sheet. It's the slot: the jib's too tight. Check jib trim first.</span></div>
+    </div>
+
+    <!-- JIB LUFF TELLTALES -->
+    <div class="seq">
+      <h4>Jib luff telltales · steering</h4>
+      <div class="tl"><span class="m core">●</span><span>Both streaming aft = trimmed right. <b>Windward lifts</b> → too high or eased (bear off / trim). <b>Leeward droops limp</b> → stalled (ease / come up). Never let the leeward one die.</span></div>
+      <div class="tl"><span class="m core">●</span><span><b>Heavy air:</b> let the upper windward telltale stop flowing to depower the top. Feather up so they lift in the puffs.</span></div>
+    </div>
+
+    <!-- JIB LEAD -->
+    <div class="seq">
+      <h4>Jib lead · the break test</h4>
+      <div class="tl"><span class="m core">●</span><span>Luff up slowly; windward telltales break <b>together top to bottom</b>. Top first → lead too far <b>aft</b>, move forward. Bottom first → move <b>aft</b>.</span></div>
+      <div class="tl"><span class="m core">●</span><span>Mark the car for light / medium / heavy and you've nailed 90% of it.</span></div>
+      <div class="tl"><span class="m fine">○</span><span>Re-tuning the lead for every shift and gust.</span></div>
+    </div>
+
+    <!-- MAIN LEECH ALL HEIGHTS -->
+    <div class="seq">
+      <h4>Main leech telltales · all heights</h4>
+      <div class="tl"><span class="m core">●</span><span><b>Top batten</b> — your trim setpoint (stalls first = early warning).</span></div>
+      <div class="tl"><span class="wind">Light/chop</span><span>All telltales flying ~100% — more twist, keep flow attached.</span></div>
+      <div class="tl"><span class="wind">Powered/flat</span><span>Top stalls occasionally. Mid and low still flying — confirm the power section is attached.</span></div>
+      <div class="tl"><span class="wind">Heavy</span><span>Backstay twists top open — all flying freely again (depower, not under-trim).</span></div>
+      <div class="tl"><span class="m core">●</span><span><b>Mid/lower telltales</b> — confirm the powerful section is attached. If one stalls while the top flies: that's the slot. Check the jib, not the sheet.</span></div>
+      <div class="tl"><span class="m fine">○</span><span>Squeezing the top to stall 50–75% for the last degree of pointing in flat water (fully-crewed mode).</span></div>
+    </div>
+
+    <!-- REACHING / RUNNING -->
+    <div class="seq">
+      <h4>Reaching &amp; running</h4>
+      <div class="tl"><span class="m core">●</span><span><b>Main:</b> mid-leech telltale becomes the key reference — keep it streaming. Accept the top lifting a little and the bottom hanging; that's the twist compromise on a reach.</span></div>
+      <div class="tl"><span class="m core">●</span><span><b>Jib:</b> ease to the luff, then trim back on; lead forward &amp; outboard.</span></div>
+      <div class="tl"><span class="m core">●</span><span><b>Kite:</b> ease to the luff curl, trim a hair, play it constantly.</span></div>
+      <div class="tl"><span class="m fine">○</span><span>Dead run: main is stalled — trust the angle, telltales won't fly reliably.</span></div>
+    </div>
+
+    <!-- UNDER 5 KN -->
+    <div class="seq lite">
+      <h4>Under ~5 kn · telltales won't fly</h4>
+      <div class="tl"><span class="m core">●</span><span><b>Heel to leeward</b> — gravity pulls the sails into shape.</span></div>
+      <div class="tl"><span class="m core">●</span><span><b>Trim by eye</b> — deep, twisted, eased; protect the shape once set.</span></div>
+      <div class="tl"><span class="m core">●</span><span><b>Masthead fly + read the water</b> — steer to pressure and the fly, not the dead yarn.</span></div>
+      <div class="tl"><span class="m core">●</span><span><b>Speed &amp; feel</b> — minimal rudder, crew dead still, foot off to build way.</span></div>
+    </div>
+
+  </section>
+
+  <!-- SUMMARY -->
+  <div class="summary">
+    <h3>Fast reference</h3>
+    <p class="sub">The dominant move per square — the rest is detail above.</p>
+    <div class="matrix">
+      <div class="mrow mhead">
+        <div class="mcell">&nbsp;</div>
+        <div class="mcell l">Light</div>
+        <div class="mcell m">Medium</div>
+        <div class="mcell h">Heavy</div>
+      </div>
+      <div class="mrow">
+        <div class="mcell rowlbl">Up</div>
+        <div class="mcell">Backstay soft, all telltales fly, foot off</div>
+        <div class="mcell">Backstay med, top stalls occasionally</div>
+        <div class="mcell">Backstay max, trav down, vang-sheet</div>
+      </div>
+      <div class="mrow">
+        <div class="mcell rowlbl">Beam</div>
+        <div class="mcell">Backstay off, ease to luff, vang light</div>
+        <div class="mcell">Light backstay, mid telltale key</div>
+        <div class="mcell">Backstay on to flatten, stay flat</div>
+      </div>
+      <div class="mrow">
+        <div class="mcell rowlbl">Broad</div>
+        <div class="mcell">Backstay off, kite, hot angles</div>
+        <div class="mcell">Kite, soak, vang twist</div>
+        <div class="mcell">Kite, vang on, weight aft, plane</div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <b>Backstay</b> → mast bend, forestay & main flatten (your depower) &nbsp;|&nbsp; <b>Sheet</b> → twist · <b>Traveler</b> → angle<br>
+    Leech stalls top-first (zipper). Trim to the top; confirm the mid/low are attached.<br>
+    Base rig ≈ 6–10 kn. Starting points for a stock J/80; trim to the day and the crew.
+  </footer>
+
+</div>
+<script>
+  (function(){
+    var tabs=document.querySelectorAll('.tab');
+    var panels=document.querySelectorAll('.panel');
+    function select(i){
+      tabs.forEach(function(t,j){t.setAttribute('aria-selected',j===i?'true':'false');});
+      panels.forEach(function(p,j){p.classList.toggle('active',j===i);});
+    }
+    tabs.forEach(function(t,i){
+      t.addEventListener('click',function(){select(i);});
+      t.addEventListener('keydown',function(e){
+        if(e.key==='ArrowRight'){var n=(i+1)%tabs.length;tabs[n].focus();select(n);}
+        if(e.key==='ArrowLeft'){var p=(i-1+tabs.length)%tabs.length;tabs[p].focus();select(p);}
+      });
+    });
+  })();
+</script>
+</body>
+</html>
