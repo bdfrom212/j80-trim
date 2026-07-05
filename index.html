@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>J/80 Trim Card</title>
+<title>J/80 Trim Card v7</title>
 <style>
   :root{
     --sea:#0b1d28; --sea2:#102a39; --panel:#0e2532;
@@ -123,6 +123,16 @@
   .rowlbl{font-family:var(--mono);font-size:10px;letter-spacing:.04em;text-transform:uppercase;color:var(--telltale);
     display:flex;align-items:center;background:var(--sea2)}
 
+  .puff-table{border:1px solid var(--hair);border-radius:14px;overflow:hidden;margin-bottom:6px}
+  .ptrow{display:grid;grid-template-columns:74px 1fr}
+  .ptrow+.ptrow{border-top:1px solid var(--hair)}
+  .ptcell{padding:10px 11px;font-size:12px;color:#d4e2e8}
+  .ptcell.hd{font-family:var(--mono);font-size:10px;letter-spacing:.05em;text-transform:uppercase;
+    display:flex;align-items:center;background:var(--sea2);color:#fff;font-weight:700}
+  .ptcell b{color:#fff}
+  .ptrow.header .ptcell{color:var(--rig)}
+  .groove-wrap{border:1px solid var(--hair);border-radius:14px;background:var(--paper);padding:8px;margin-bottom:12px;overflow:hidden}
+  .groove-wrap svg{width:100%;height:auto;display:block}
   footer{margin-top:26px;font-size:11px;color:#6f8794;text-align:center;line-height:1.5}
   footer b{color:#9fb6c1}
   @media (prefers-reduced-motion:reduce){.panel.active{animation:none}}
@@ -140,7 +150,7 @@
   <div class="principles">
     <div class="row"><span class="k">Backstay</span><span>Primary depower — <b>bends mast, straightens forestay, flattens main.</b> Key in all winds.</span></div>
     <div class="row"><span class="k">Sheet</span><span>Sets <b>twist</b> — read off the <b>top-leech telltale</b> (it stalls first).</span></div>
-    <div class="row"><span class="k">Traveler</span><span>Sets <b>angle of attack</b> — read off the <b>luff telltales</b>.</span></div>
+    <div class="row"><span class="k">Traveler</span><span>Sets <b>angle of attack</b> — increase by falling off or raising traveler. Read luff telltales. Use traveler (not sheet) to adjust angle <b>without changing sail shape.</b></span></div>
     <div class="row"><span class="k">Off-wind</span><span>Ease backstay for power; <b>vang</b> takes over leech/twist.</span></div>
   </div>
 
@@ -150,6 +160,7 @@
     <button class="tab" role="tab" aria-selected="false" aria-controls="broad"  id="t-broad">Broad</button>
     <button class="tab" role="tab" aria-selected="false" aria-controls="seq"    id="t-seq">Order</button>
     <button class="tab" role="tab" aria-selected="false" aria-controls="tells"  id="t-tells">Tells</button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="tactics" id="t-tactics">Tactics</button>
   </div>
 
   <!-- UPWIND -->
@@ -281,7 +292,7 @@
         <div class="r"><span class="lbl">Main</span><span class="val">Right out; vang light</span></div>
         <div class="r"><span class="lbl">Outhaul</span><span class="val">Eased · Cunno off</span></div>
       </div>
-      <div class="feel"><b>Feel:</b> Hot angles to build apparent wind, then soak. Work the sheet.</div>
+      <div class="feel"><b>Feel:</b> Hot angles / Head Up in lulls to build apparent wind. Soak / Head Downwind in Gusts. Work the sheet.</div>
     </div>
     <div class="card med">
       <div class="chead"><span class="pill">Medium</span><span class="kn">8–15 kn</span><span class="move">Soak · vang controls twist</span></div>
@@ -291,7 +302,7 @@
         <div class="r"><span class="lbl">Main</span><span class="val">Out; vang set so boom can't sky</span></div>
         <div class="r"><span class="lbl">Outhaul</span><span class="val">Mid · Cunno light</span></div>
       </div>
-      <div class="feel"><b>Feel:</b> Soak lower as pressure builds. Fast and fun.</div>
+      <div class="feel"><b>Feel:</b> Soak / Head Downwind in Gusts · Heat Up / Head Up in Lulls. Fast and fun.</div>
     </div>
     <div class="card heavy">
       <div class="chead"><span class="pill">Heavy</span><span class="kn">&gt;16 kn</span><span class="move">Plane · vang on · weight aft</span></div>
@@ -300,7 +311,7 @@
         <div class="r"><span class="lbl">Kite</span><span class="val">Tack line <em>max</em>; play sheet, ease in gusts</span></div>
         <div class="r"><span class="lbl">Main</span><span class="val"><em>Vang ON</em> — kills the death-roll</span></div>
         <div class="r"><span class="lbl">Outhaul</span><span class="val">On · Cunno on</span></div>
-        <div class="r"><span class="lbl">Steer</span><span class="val">Bow down, soak the gusts</span></div>
+        <div class="r"><span class="lbl">Steer</span><span class="val">Soak / Head Downwind in Gusts · Heat Up / Head Up in Lulls</span></div>
       </div>
       <div class="feel"><b>Feel:</b> Planing. Weight <b>aft</b>. Watch the broach and by-the-lee.</div>
     </div>
@@ -427,10 +438,24 @@
       <div class="tl"><span class="m core">●</span><span><b>Heavy air:</b> let the upper windward telltale stop flowing to depower the top. Feather up so they lift in the puffs.</span></div>
     </div>
 
+    <!-- ANGLE OF ATTACK & GROOVE -->
+    <div class="seq">
+      <h4>Angle of attack &amp; the groove</h4>
+      <div class="tl"><span class="m core">●</span><span><b>Low groove</b> — both telltales streaming straight aft = attached flow both sides. Most lift.</span></div>
+      <div class="tl"><span class="m core">●</span><span><b>Middle groove</b> — windward telltales lifting 45° to vertical = edge of stalling. Best lift-to-drag ratio. Most efficient.</span></div>
+      <div class="tl"><span class="m core">●</span><span><b>High groove</b> — windward side stalling more frequently. Temporary higher pointing but less power. Main starts to soften at mast.</span></div>
+      <div class="tl"><span class="m core">●</span><span><b>Leeward telltales</b> stall just below the groove — especially helpful in light air when other indicators are less reliable. Bear off to just above the stall point.</span></div>
+      <div class="tl"><span class="m core">●</span><span><b>Puff:</b> increases apparent wind and angle of attack. Ease sail or drop traveller to compensate. Leeward telltales may stall.</span></div>
+      <div class="tl"><span class="m core">●</span><span><b>Lull:</b> decreases angle of attack. May need to bear off if it persists.</span></div>
+      <div class="tl"><span class="m core">●</span><span>Twist creates a smaller angle of attack at top of sail. <b>Reduce twist to increase pointing</b> — squeeze top telltale to stall 50–75% of the time.</span></div>
+      <div class="tl"><span class="m fine">○</span><span>Add mainsail twist in heavy waves to compensate for pitching.</span></div>
+    </div>
+
     <!-- JIB LEAD -->
     <div class="seq">
-      <h4>Jib lead · the break test</h4>
-      <div class="tl"><span class="m core">●</span><span>Luff up slowly; windward telltales break <b>together top to bottom</b>. Top first → lead too far <b>aft</b>, move forward. Bottom first → move <b>aft</b>.</span></div>
+      <h4>Jib lead · the car rule</h4>
+      <div class="tl"><span class="m core">●</span><span><b>"Move the car toward the unhappy telltale."</b> Luff up slowly and watch the jib's windward telltales. Top breaks first → too much twist / leech too open → move car <b>forward.</b> Bottom breaks first → leech too tight, open for twist → move car <b>aft.</b> Goal: both break together.</span></div>
+      <div class="tl"><span class="m core">●</span><span><b>Leeward telltale drooping</b> = sheet issue, not a lead issue.</span></div>
       <div class="tl"><span class="m core">●</span><span>Mark the car for light / medium / heavy and you've nailed 90% of it.</span></div>
       <div class="tl"><span class="m fine">○</span><span>Re-tuning the lead for every shift and gust.</span></div>
     </div>
@@ -443,7 +468,7 @@
       <div class="tl"><span class="wind">Powered/flat</span><span>Top stalls occasionally. Mid and low still flying — confirm the power section is attached.</span></div>
       <div class="tl"><span class="wind">Heavy</span><span>Backstay twists top open — all flying freely again (depower, not under-trim).</span></div>
       <div class="tl"><span class="m core">●</span><span><b>Mid/lower telltales</b> — confirm the powerful section is attached. If one stalls while the top flies: that's the slot. Check the jib, not the sheet.</span></div>
-      <div class="tl"><span class="m fine">○</span><span>Squeezing the top to stall 50–75% for the last degree of pointing in flat water (fully-crewed mode).</span></div>
+      <div class="tl"><span class="m fine">○</span><span>Add mainsail twist in heavy waves to compensate for pitching.</span></div>
     </div>
 
     <!-- REACHING / RUNNING -->
@@ -462,6 +487,148 @@
       <div class="tl"><span class="m core">●</span><span><b>Trim by eye</b> — deep, twisted, eased; protect the shape once set.</span></div>
       <div class="tl"><span class="m core">●</span><span><b>Masthead fly + read the water</b> — steer to pressure and the fly, not the dead yarn.</span></div>
       <div class="tl"><span class="m core">●</span><span><b>Speed &amp; feel</b> — minimal rudder, crew dead still, foot off to build way.</span></div>
+    </div>
+
+  </section>
+
+  <!-- TACTICS -->
+  <section class="panel" id="tactics" role="tabpanel" aria-labelledby="t-tactics">
+
+    <div class="seq">
+      <h4>Puff direction · header, lift, or neutral</h4>
+      <div class="puff-table">
+        <div class="ptrow header">
+          <div class="ptcell hd">Approach</div>
+          <div class="ptcell hd">Response</div>
+        </div>
+        <div class="ptrow">
+          <div class="ptcell"><b>Forward of 45°</b> (ahead of beam)</div>
+          <div class="ptcell"><b>Header.</b> Think tack immediately as the puff hits. Every meter sailed in a header is distance lost to windward — tacking also shrinks your tack angle (e.g. a 20° header cuts a 90° tack to 70°).</div>
+        </div>
+        <div class="ptrow">
+          <div class="ptcell"><b>45°–60°</b> (abeam zone)</div>
+          <div class="ptcell"><b>Neutral</b> — probably in line with the wind you're sailing in. Ease/feather, hike, and trim through it.</div>
+        </div>
+        <div class="ptrow">
+          <div class="ptcell"><b>Aft of 60°</b> (behind beam)</div>
+          <div class="ptcell"><b>Lift.</b> Ease and smoothly head up to the new higher course while trimming in — don't slam the trim, ease into it.</div>
+        </div>
+      </div>
+      <p class="note">Watch the puff's approach angle on the water before it hits — that tells you what kind of shift it's carrying.</p>
+    </div>
+
+    <div class="seq">
+      <h4>The upwind groove spectrum</h4>
+      <div class="groove-wrap">
+        <svg viewBox="0 0 680 600" role="img" aria-label="Upwind groove spectrum from Footing to Pinching with telltale behavior in each zone">
+          <path d="M585,584 L591,565 L223,409 L199,480 Z" fill="#e8e7e0" opacity="0.95"/>
+          <path d="M591,565 L600,548 L257,342 L223,409 Z" fill="#E6F1FB" opacity="0.95"/>
+          <path d="M600,548 L611,532 L302,280 L257,342 Z" fill="#EAF3DE" opacity="0.95"/>
+          <path d="M611,532 L625,518 L352,225 L302,280 Z" fill="#FAEEDA" opacity="0.95"/>
+          <path d="M625,518 L640,505 L410,178 L352,225 Z" fill="#FCEBEB" opacity="0.95"/>
+
+          <line x1="591" y1="565" x2="223" y2="409" stroke="#b4b2a9" stroke-width="0.5"/>
+          <line x1="600" y1="548" x2="257" y2="342" stroke="#b4b2a9" stroke-width="0.5"/>
+          <line x1="611" y1="532" x2="302" y2="280" stroke="#185FA5" stroke-width="4"/>
+          <line x1="625" y1="518" x2="352" y2="225" stroke="#b4b2a9" stroke-width="0.5"/>
+          <path d="M585,584 A140,140 0 0,1 640,505" fill="none" stroke="#b4b2a9" stroke-width="0.5"/>
+          <path d="M199,480 A540,540 0 0,1 410,178" fill="none" stroke="#b4b2a9" stroke-width="0.5"/>
+
+          <text font-size="13" font-weight="600" fill="#2C2C2A" x="415" y="510" text-anchor="middle">Footing</text>
+          <text font-size="13" font-weight="600" fill="#185FA5" x="435" y="470" text-anchor="middle">Low / Fast</text>
+          <text font-size="13" font-weight="600" fill="#3B6D11" x="465" y="428" text-anchor="middle">On Angle</text>
+          <text font-size="13" font-weight="600" fill="#BA7517" x="490" y="392" text-anchor="middle">Height</text>
+          <text font-size="13" font-weight="600" fill="#A32D2D" x="522" y="358" text-anchor="middle">Pinching</text>
+
+          <rect x="50" y="160" width="200" height="52" rx="8" fill="#E6F1FB" opacity="0.98"/>
+          <rect x="50" y="160" width="200" height="52" rx="8" fill="none" stroke="#185FA5" stroke-width="1.5"/>
+          <text font-size="13" font-weight="700" fill="#185FA5" x="150" y="180" text-anchor="middle">Twitchy Luff Groove</text>
+          <text font-size="11" fill="#185FA5" x="150" y="198" text-anchor="middle">&#8592; Max VMG &middot; Live Here</text>
+          <line x1="250" y1="198" x2="302" y2="280" stroke="#185FA5" stroke-width="1.5" stroke-dasharray="3 3"/>
+
+          <text font-size="11" font-weight="700" fill="#E24B4A" x="255" y="446" text-anchor="end">W</text>
+          <g transform="translate(275,443)">
+            <circle r="5.5" fill="#E24B4A"/>
+            <path d="M 8,0 Q 14,-6 20,0 Q 26,6 32,0 Q 38,-6 44,0" fill="none" stroke="#E24B4A" stroke-width="4.5" stroke-linecap="round"/>
+          </g>
+          <text font-size="11" font-weight="700" fill="#1D9E75" x="255" y="471" text-anchor="end">L</text>
+          <g transform="translate(275,468)">
+            <circle r="5" fill="#1D9E75"/>
+            <line x1="6" y1="0" x2="46" y2="0" stroke="#1D9E75" stroke-width="4" stroke-linecap="round"/>
+          </g>
+          <text font-size="11" font-weight="700" fill="#1D9E75" x="255" y="496" text-anchor="end">L</text>
+          <g transform="translate(275,493) rotate(60)">
+            <circle r="5" fill="#1D9E75"/>
+            <path d="M 8,0 Q 14,-6 20,0 Q 26,6 32,0 Q 38,-6 40,0" fill="none" stroke="#1D9E75" stroke-width="4" stroke-linecap="round"/>
+          </g>
+
+          <text font-size="11" font-weight="700" fill="#E24B4A" x="285" y="400" text-anchor="end">W</text>
+          <g transform="translate(305,398)">
+            <circle r="5.5" fill="#E24B4A"/>
+            <path d="M 8,0 Q 14,-6 20,0 Q 26,6 32,0 Q 38,-6 44,0" fill="none" stroke="#E24B4A" stroke-width="4.5" stroke-linecap="round"/>
+          </g>
+          <text font-size="11" font-weight="700" fill="#1D9E75" x="285" y="425" text-anchor="end">L</text>
+          <g transform="translate(305,422)">
+            <circle r="5" fill="#1D9E75"/>
+            <line x1="6" y1="0" x2="46" y2="0" stroke="#1D9E75" stroke-width="4" stroke-linecap="round"/>
+          </g>
+
+          <text font-size="11" font-weight="700" fill="#E24B4A" x="325" y="328" text-anchor="end">W</text>
+          <g transform="translate(345,325) rotate(-30)">
+            <circle r="5" fill="#E24B4A"/>
+            <path d="M 8,0 Q 14,-6 20,0 Q 26,6 32,0 Q 38,-6 40,0" fill="none" stroke="#E24B4A" stroke-width="4.5" stroke-linecap="round"/>
+          </g>
+          <g transform="translate(345,341) rotate(0)">
+            <circle r="5" fill="#E24B4A"/>
+            <path d="M 8,0 Q 14,-6 20,0 Q 26,6 32,0 Q 38,-6 40,0" fill="none" stroke="#E24B4A" stroke-width="4.5" stroke-linecap="round"/>
+          </g>
+          <g transform="translate(345,357) rotate(30)">
+            <circle r="5" fill="#E24B4A"/>
+            <path d="M 8,0 Q 14,-6 20,0 Q 26,6 32,0 Q 38,-6 40,0" fill="none" stroke="#E24B4A" stroke-width="4.5" stroke-linecap="round"/>
+          </g>
+          <g transform="translate(345,373) rotate(60)">
+            <circle r="5" fill="#E24B4A"/>
+            <path d="M 8,0 Q 14,-6 20,0 Q 26,6 32,0 Q 38,-6 40,0" fill="none" stroke="#E24B4A" stroke-width="4.5" stroke-linecap="round"/>
+          </g>
+          <text font-size="10" fill="#5f5e5a" x="395" y="360" font-style="italic">variable</text>
+          <text font-size="11" font-weight="700" fill="#1D9E75" x="325" y="395" text-anchor="end">L</text>
+          <g transform="translate(345,392)">
+            <circle r="5" fill="#1D9E75"/>
+            <line x1="6" y1="0" x2="46" y2="0" stroke="#1D9E75" stroke-width="4" stroke-linecap="round"/>
+          </g>
+
+          <text font-size="11" font-weight="700" fill="#E24B4A" x="375" y="305" text-anchor="end">W</text>
+          <g transform="translate(395,302) rotate(-120)">
+            <circle r="5.5" fill="#E24B4A"/>
+            <path d="M 8,0 Q 14,-6 20,0 Q 26,6 32,0 Q 38,-6 44,0" fill="none" stroke="#E24B4A" stroke-width="4.5" stroke-linecap="round"/>
+          </g>
+          <text font-size="11" font-weight="700" fill="#1D9E75" x="375" y="329" text-anchor="end">L</text>
+          <g transform="translate(395,326)">
+            <circle r="5" fill="#1D9E75"/>
+            <line x1="6" y1="0" x2="46" y2="0" stroke="#1D9E75" stroke-width="4" stroke-linecap="round"/>
+          </g>
+
+          <text font-size="11" font-weight="700" fill="#E24B4A" x="430" y="275" text-anchor="end">W</text>
+          <g transform="translate(450,272) rotate(-150)">
+            <circle r="5.5" fill="#E24B4A"/>
+            <path d="M 8,0 Q 14,-6 20,0 Q 26,6 32,0 Q 38,-6 44,0" fill="none" stroke="#E24B4A" stroke-width="4.5" stroke-linecap="round"/>
+          </g>
+          <text font-size="11" font-weight="700" fill="#1D9E75" x="430" y="298" text-anchor="end">L</text>
+          <g transform="translate(450,295)">
+            <circle r="5" fill="#1D9E75"/>
+            <line x1="6" y1="0" x2="46" y2="0" stroke="#1D9E75" stroke-width="4" stroke-linecap="round"/>
+          </g>
+
+          <line x1="40" y1="530" x2="640" y2="530" stroke="#d3d1c7" stroke-width="0.5"/>
+          <text font-size="12" fill="#2C2C2A" x="42" y="550" font-weight="600">On Angle = default racing groove. Dance at the Twitchy Luff line for max VMG.</text>
+          <text font-size="11" fill="#5f5e5a" x="42" y="568">Drop to Low/Fast to build speed after a tack, in chop, or coming out of a lull.</text>
+          <text font-size="11" fill="#5f5e5a" x="42" y="586">Push to Height only to fetch a mark or cross traffic — accept temporary speed loss.</text>
+        </svg>
+      </div>
+      <div class="tl"><span class="m core">&#9679;</span><span><b>Live at the Twitchy Luff line</b> — the boundary between On Angle and Height — for best VMG. Windward telltale dances/lifts intermittently, leeward stays pinned.</span></div>
+      <div class="tl"><span class="m core">&#9679;</span><span><b>Drop to Low/Fast</b> after a tack, in chop, or coming out of a lull to rebuild speed.</span></div>
+      <div class="tl"><span class="m core">&#9679;</span><span><b>Push to Height</b> only when you need it — fetching a mark, crossing a boat. It's a temporary trade of speed for angle, not a resting state.</span></div>
+      <div class="tl"><span class="m fine">&#9675;</span><span><b>Pinching</b> loses both speed and height — almost never the right call.</span></div>
     </div>
 
   </section>
